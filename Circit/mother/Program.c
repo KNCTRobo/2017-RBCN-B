@@ -1,6 +1,6 @@
 /*	Program.c
  *	2017年度高専ロボコン Bチームメインプログラム
- *	version	0.80
+ *	version	0.90
  */
 #include <16F886.h>
 #include "defines.h"
@@ -309,6 +309,7 @@ void led_flash(void)
 	}
 }
 
+#if 0
 /*/Analogs gen_Analog(int source[], int offset)
 	//アナログスティックの計算
 	Analogs の中身
@@ -402,37 +403,39 @@ Analogs gen_Analog(unsigned char source[], int offset)
 	}
 	return data;
 }
+#endif
 
 void PS2_dataread(unsigned char source[])
 {
-		for (i = 0; i < BUFFER_SIZE; i++)
-			Data[i] = 0;
-		/* PSコントローラからデータ受信 */
-		if (kbhit())
-			gets(Data);
-		/* PSコントローラの識別子0x5a('Z')を捜索、オフセットを決定 */
-		for (i = 0; i < BUFFER_SIZE; i++)
+	int i;
+	for (i = 0; i < BUFFER_SIZE; i++)
+		Data[i] = 0;
+	/* PSコントローラからデータ受信 */
+	if (kbhit())
+		gets(Data);
+	/* PSコントローラの識別子0x5a('Z')を捜索、オフセットを決定 */
+	for (i = 0; i < BUFFER_SIZE; i++)
+	{
+		if (Data[i] == 'Z')
 		{
-			if (Data[i] == 'Z')
-			{
-				/* 正常に受信できている場合 */
-				ofs = i - 1;					// オフセット情報をセット
-				rcv_err = 0;	rcv = 1;				// 再試行回数のカウントをリセット、通信状態のフラグを1にする
-				break;
-			}
+			/* 正常に受信できている場合 */
+			ofs = i - 1;					// オフセット情報をセット
+			rcv_err = 0;	rcv = 1;				// 再試行回数のカウントをリセット、通信状態のフラグを1にする
+			break;
 		}
-		if(Data[1 + ofs] != 'Z')
+	}
+	if(Data[1 + ofs] != 'Z')
+	{
+		/* PSコントローラから信号を受信できなかった時の処理 */
+		/* 再試行回数が閾値を超えた場合通信断絶と判断する */
+		if(rcv_err >= RCV_THRESHOLD)
 		{
-			/* PSコントローラから信号を受信できなかった時の処理 */
-			/* 再試行回数が閾値を超えた場合通信断絶と判断する */
-			if(rcv_err >= RCV_THRESHOLD)
-			{
-				rcv = 0;
-				pad_mode = DIGITAL_MODE;
-			}
-			/* 再試行回数のカウント */
-			else rcv_err++;
+			rcv = 0;
+			pad_mode = DIGITAL_MODE;
 		}
+		/* 再試行回数のカウント */
+		else rcv_err++;
+	}
 }
 
 void motor_emit(char channel, int power)

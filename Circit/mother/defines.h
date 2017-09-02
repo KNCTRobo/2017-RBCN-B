@@ -66,7 +66,7 @@
 /*	EMITRULE_LED_F1
  *	LED1の点灯条件
  */
-#define EMITRULE_LED_F1 (((rcv) && (!PS2_PUSH_R1)) || ())
+#define EMITRULE_LED_F1 (((rcv) && (!PS2_PUSH_R1)) || (motor_buf))
 /*	LED_PULLUP
  *	LED1のプルアップ使用フラグ
  */
