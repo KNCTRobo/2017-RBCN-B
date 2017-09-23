@@ -26,7 +26,7 @@
 
 /*	Program
  *	コンパイル制御による制御プログラムの選択
- */	#define Program	0
+ */	#define Program	2
 
 /* 共通設定項目 */
 	/*	F_TIME
@@ -43,7 +43,7 @@
 	 */	#define LED_F1				PIN_A2
 	/*	EMITRULE_LED_F1
 	 *	LED1の点灯条件
-	 */	#define EMITRULE_LED_F1		((rcv && !PS2_PUSH_R1) || motor_buf)
+	 */	#define EMITRULE_LED_F1		((rcv && !PS2_PUSH_R1) || motor_isemit(pwr))
 #if Program == 1
 /* ロボット1"サヴァニン" 設定項目 */
 	/*	MOTOR_NUM
@@ -126,6 +126,9 @@
 	#define ANALOG_THRESHOLD	80
 #else
 /* デフォルト値 */
+	/*	MOTOR_NUM
+	 *	使用モーター数
+	 */	#define MOTOR_NUM	0
 	#define PWR_MOV_TABLE	{0}
 	/*	LOOP_DELAY
 	 *	プログラムループの待ち時間

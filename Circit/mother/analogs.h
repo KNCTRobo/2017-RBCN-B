@@ -45,6 +45,8 @@ Analogs gen_Analog(unsigned char source[],int offset);
 #define PS2_STICK_LUP(data) ((data.sticks & 0x40) != 0)
 #define PS2_STICK_LDN(data) ((data.sticks & 0x80) != 0)
 
+#include "analogs.c"
+
 #endif
 #endif
 /* analogs.h EOF */
