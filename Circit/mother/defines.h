@@ -26,7 +26,7 @@
 
 /*	Program
  *	コンパイル制御による制御プログラムの選択
- */	#define Program	2
+ */	#define Program	0
 
 /* 共通設定項目 */
 	/*	F_TIME
@@ -34,16 +34,28 @@
 	 */	#define F_TIME	200
 	/*	LED_PULLUP
 	 *	LED1のプルアップ使用フラグ
-	 */	#define LED_PULLUP			   1
+	 */	#define LED_PULLUP			   0
 	/*	LED_OPR
 	 *	オペレーションLEDのピン設定
-	 */	#define LED_OPR				PIN_A0
+	 */	#define LED_OPR				PIN_C5
 	/*	LED_F1
 	 *	LED1のピン設定
-	 */	#define LED_F1				PIN_A2
+	 */	#define LED_F1				PIN_C0
+	/*	LED_F1
+	 *	LED1のピン設定
+	 */	#define LED_F2				PIN_C1
+	/*	LED_F1
+	 *	LED1のピン設定
+	 */	#define LED_F3				PIN_C2
 	/*	EMITRULE_LED_F1
 	 *	LED1の点灯条件
-	 */	#define EMITRULE_LED_F1		((rcv && !PS2_PUSH_R1) || motor_isemit(pwr))
+	 */	#define EMITRULE_LED_F1		0
+	/*	EMITRULE_LED_F1
+	 *	LED1の点灯条件
+	 */	#define EMITRULE_LED_F2		(rcv && !PS2_PUSH_R1)
+	/*	EMITRULE_LED_F1
+	 *	LED1の点灯条件
+	 */	#define EMITRULE_LED_F3		(motor_isemit(pwr))
 #if Program == 1
 /* ロボット1"サヴァニン" 設定項目 */
 	/*	MOTOR_NUM

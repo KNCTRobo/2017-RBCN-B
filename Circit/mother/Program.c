@@ -1,6 +1,6 @@
 /*	Program.c
  *	高専ロボコン2017 Bチームプログラム
- *	ver. 0.90
+ *	ver. 1.00
  */
 
 #include "includes.h"
@@ -50,6 +50,7 @@ void main()
 	/*	int* f
 	 *	Frame変数
 	 */	int f[2];
+	#if Program!=0
 	signed int level[MOTOR_NUM];
 	/*	int* pwr
 	 *	モータ出力レベル
@@ -57,10 +58,6 @@ void main()
 	/*	int* motor_buf
 	 *	モータ出力レベル
 	 */	signed int motor_buf[MOTOR_NUM];
-	#if 0
-	/*	uchar motor_buf
-	 *	モータ出力状態バッファ
-	 */	unsigned char motor_buf = 0;
 	#endif
 	/*	long rcv_err
 	 *	PSコントローラからの通信が途絶えたときに通信断絶状態と判定するための変数
@@ -92,6 +89,7 @@ void main()
 		f[1]++;	if (f[1] >= MOTOR_NUM) f[1] = 0;
 		/* PSコントローラからデータ受信 */
 		PS2_read();
+		#if Program != 0
 		/* PSコントローラのデータ処理 */
 		if(PS2_Data[1 + PS2_offset]=='Z')
 		{
@@ -118,17 +116,30 @@ void main()
 			//再試行回数のカウント
 			else rcv_err++;
 		}
+		#endif
 	/* LED点灯制御 */
 		if(f[0])
 			led_on(LED_OPR);
 		else
 			led_off(LED_OPR);
+		#if Program!=0
 		if(EMITRULE_LED_F1)
 			led_on(LED_F1);
 		else
 			led_off(LED_F1);
+		if(EMITRULE_LED_F2)
+			led_on(LED_F2);
+		else
+			led_off(LED_F2);
+		if(EMITRULE_LED_F3)
+			led_on(LED_F3);
+		else
+			led_off(LED_F3);
+		#endif
 	/* モータードライバの出力内容を決定、信号を出力する */
+		#if Program != 0
 		motor_senddata(pwr, motor_buf, f[1]);
+		#endif
 
 		#if LOOP_DELAYUNIT_US
 		delay_us(LOOP_DELAY);
@@ -141,19 +152,21 @@ void main()
 void setup(void)
 {
 	/* 入力ピンのセット */
-	set_tris_a(0xC0);
-	set_tris_b(0xFF);
+	set_tris_a(0x00);
+	set_tris_b(0x00);
 	/*	portC入力ピン設定
 		C7は受信に使用するため該当ビットを1にする
 		XMIT=6,RCV=7
-	 */	set_tris_c(0x8D);
+	 */	set_tris_c(0x80);
 	/* オシレータの初期化 */
 	setup_oscillator(OSC_8MHZ);
 }
 
 void motor_emit(char channnel, int power)
 {
+	led_on(LED_F1);
 	printf("%c%U*\r", channnel, power);
+	led_off(LED_F1);
 	delay_us(TIME_MOTOR_MARGIN);
 }
 
@@ -228,13 +241,15 @@ void Data_Proc(signed int* stat)
 			stat[0] -= (PS2_PUSH_L1 ? 2 : 1);
 			stat[1] += (PS2_PUSH_L1 ? 2 : 1);
 		}
-		stat[2] = (stat[2] | (PS2_PUSH_TRI)) & (PS2_PUSH_CRO);
+		stat[2] = (stat[2] | (PS2_PUSH_CIR)) & (!PS2_PUSH_TRI);
 		stat[0] = stat[0] > 2 ? 2 : stat[0];
 		stat[1] = stat[1] > 2 ? 2 : stat[1];
 		stat[0] = stat[0] < -2 ? -2 : stat[0];
 		stat[1] = stat[1] < -2 ? -2 : stat[1];
 	}
 }
+#else
+{}
 #endif
 
 void Set_pwr(signed int* stat, signed int* power)
@@ -253,6 +268,8 @@ void Set_pwr(signed int* stat, signed int* power)
 	power[1] = pwt[2 + stat[1]];
 	power[2] = stat[2] ? PWR_ARM : 0;
 }
+#else
+{}
 #endif
 
 void motor_senddata(int* power, int* buffer, int index)
@@ -325,6 +342,8 @@ void motor_senddata(int* power, int* buffer, int index)
 		buffer[2] = power[2];
 	}
 }
+#else
+{}
 #endif
 
 int motor_isemit(int* power)
@@ -334,13 +353,15 @@ int motor_isemit(int* power)
 	{
 		y |= power[i];
 	}
-	return y;
+	return y != 0;
 }
 
 void led_reset(void)
 {
 	led_off(LED_OPR);
 	led_off(LED_F1);
+	led_off(LED_F2);
+	led_off(LED_F3);
 }
 
 void led_flash(void)
