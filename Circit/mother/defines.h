@@ -81,7 +81,7 @@
 	 */	#define PWR_AIR	100
 	/*	PWR_ARM
 	 *	アーム駆動に用いるパワー
-	 */	#define PWR_ARM	100
+	 */	#define PWR_ARM	5
 	/*	LOOP_DELAY
 	 *	プログラムループの待ち時間
 	 */	#define LOOP_DELAY	0
@@ -122,6 +122,12 @@
 	/*	LOOP_DELAY
 	 *	プログラムループの待ち時間
 	 */	#define LOOP_DELAY	0
+	/*	PWR_INVERT_MOVEL
+	 *	駆動モータL符号反転フラグ
+	 */	#define PWR_INVERT_MOVEL 0
+	/*	PWR_INVERT_MOVER
+	 *	駆動モータR符号反転フラグ
+	 */	#define PWR_INVERT_MOVER 1
 	/*	LOOP_DELAYUNIT_US
 	 *	プログラムループの待ち時間の単位をusにするかどうか
 	 */	#define LOOP_DELAYUNIT_US	1
